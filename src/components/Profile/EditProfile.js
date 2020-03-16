@@ -77,7 +77,7 @@ const EditProfile = () => {
           }
           `
     };
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch("http://localhost:8000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {

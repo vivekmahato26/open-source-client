@@ -74,7 +74,7 @@ const SignIn = () => {
       }
       `
     };
-    fetch('https://open-source-server.herokuapp.com/graphql',{
+    fetch('http://localhost:8000/graphql',{
       method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
@@ -93,6 +93,7 @@ const SignIn = () => {
           localStorage.setItem('token',data.token);
           auth.login(data.userId,data.token);
         }
+        window.location.reload(true);
     })
     .catch(err => {
         console.log(err);

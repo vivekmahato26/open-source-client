@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 import { Link } from "react-router-dom";
-import {Grid} from '@material-ui/core';
+import {Grid , Paper} from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 
@@ -44,6 +44,11 @@ const useStyles = makeStyles({
     '& > *': {
       margin: "1px",
     },
+  },
+  paper: {
+    background: "#f7f7f7",
+    padding: 5,
+    marginBottom: 8
   }
 });
 
@@ -56,32 +61,45 @@ const anchorStyle = {
   fontSize: "1rem",
   color: "#2979ff"
 };
-let filter = "";
+
+const anchorStyleButton = {
+  display: "flex",
+  textDecoration: "none",
+  fontSize: "1rem",
+  color: "#3f51b5"
+};
 
 export default function Project(props) {
+
   const [projects, setProjects] = useState({ projects: [] });
   const [length, setLength] = useState({ length: 0 });
 
-  const handleFilter = (event) => {
-    fetchProjects(event.target.innerText);
+  const handleFilterCategory = (event) => {
+    fetchProjects(null,event.target.innerText);
+  }
+  const handleFilterTag = (event) => {
+    fetchProjects(event.target.innerText,null);
   }
 
   
 
-  const fetchProjects = (arg) => {
-    if(filter !== "") {
-      arg = `${filter}`
-    }
-    if(arg) {
-      arg = `"${arg}"`;
+  const fetchProjects = (tag,category) => {
+    if(tag) {
+      tag = `"${tag}"`;
     }
     else {
-      arg = null;
+      tag = null;
+    }
+    if(category) {
+      category = `"${category}"`;
+    }
+    else {
+      category = null;
     }
     const requestBody = {
       query: `
             query {
-              projects(projectFilter:{tag:[${arg}],category:${arg}}){
+              projects(projectFilter:{tag:[${tag}],category:${category},userId:null}){
                 _id
                 name
                 desc
@@ -100,7 +118,7 @@ export default function Project(props) {
           `
     };
 
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch("http://localhost:8000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -126,9 +144,13 @@ export default function Project(props) {
     fetchProjects();
     setLength({ length: Object.keys(projects).length });
   }
-  if(filter !== props.filterProject) {
-    filter = props.filterProject;
-    fetchProjects();
+  if(props.filterProject) {
+    if(props.filterProject.tag) {
+      fetchProjects(props.filterProject.tag,null);
+    }
+    if(props.filterProject.category) {
+      fetchProjects(null,props.filterProject.category);
+      }
   }
 
   const classes = useStyles();
@@ -138,10 +160,10 @@ export default function Project(props) {
   let proj = projectList.map(project => {
     const projectId = project._id;
     return (
-      <>
+      <React.Fragment  key={projectId}>
         <br />
         <Card
-          key={projectId}
+         
           raised= {true}
           className={classes.root}
           variant="outlined"
@@ -169,7 +191,7 @@ export default function Project(props) {
                   clickable
                   variant="outlined"
                   color="primary"
-                  onClick={handleFilter}
+                  onClick={handleFilterCategory}
                 />
             </Typography>
             {line}
@@ -178,8 +200,8 @@ export default function Project(props) {
                 {project.admin.sname}
               </Link>
             </Typography>
-            <Typography variant="body2" component="p">
-              {project.desc}
+            <Typography variant="body2" component="span">
+              <Paper className={classes.paper}>{project.desc}</Paper>
             </Typography>
             <Grid container spacing={1}>
                 <div className={classes.tags}>
@@ -190,7 +212,7 @@ export default function Project(props) {
                   label={t}
                   clickable
                   color="primary"
-                  onClick={handleFilter}
+                  onClick={handleFilterTag}
                 />
               )
             })}</div>
@@ -203,23 +225,28 @@ export default function Project(props) {
             <IconButton aria-label="share">
               <ShareIcon />
             </IconButton>
-            <Button style={rightAligned} size="small">
-              Learn More
+            <Button style={rightAligned} size="small" variant="outlined" color="primary">
+            <Link
+                to={{
+                  pathname: `/projects/${project.slug}`,
+                  state: {
+                    projectId: { projectId }
+                  }
+                }}
+                style={anchorStyleButton}
+              >
+                Learn More
+              </Link>
             </Button>
           </CardActions>
         </Card>
-      </>
+      </React.Fragment>
     );
   });
   if(projectList.length === 0) {
     proj = <>
             <h2>No projects available for selected filters!!!</h2>
-            <Button type="button"
-          fullWidth
-          variant="contained"
-          color="primary"
-          onClick={() => {window.location.reload(true)}}
-          >Clear Filters</Button>
+            
           </>
   }
   return <div>{proj}</div>;

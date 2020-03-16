@@ -62,6 +62,7 @@ export default function AddProject() {
       } else {
         slug = slug + "-" + s;
       }
+      return slug;
     });
     const requestBody = {
       query: `
@@ -76,7 +77,7 @@ export default function AddProject() {
             `
     };
     const token = localStorage.getItem("token");
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch("http://localhost:8000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {

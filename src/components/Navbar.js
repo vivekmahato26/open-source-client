@@ -39,7 +39,7 @@ export default function Navbar () {
                 <li onClick={logout}>
                     <Link>{(localStorage.getItem('token')) ? 'logout' : ''}</Link>
                 </li>
-                {!token && userId && <li onclick={handleClick('signin')}>
+                {!token && <li onclick={handleClick('signin')}>
                     <Link to="/signin">Sign In</Link>
                 </li>}
                 {!userId &&<li onclick={handleClick('signup')}>
