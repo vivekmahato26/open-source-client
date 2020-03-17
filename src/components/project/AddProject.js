@@ -67,7 +67,7 @@ export default function AddProject() {
     const requestBody = {
       query: `
             mutation{
-              addProject(projectInput:{name:"${formTarget.name.value}",desc:"${formTarget.description.value}",category:"${category}",orgination:"${formTarget.orgination.value}",slug:"${slug}",tag:"${chip}",createdAt:"${date}"}){
+              addProject(projectInput:{name:"${formTarget.name.value}",desc:"${formTarget.description.value}",git:"${formTarget.git.value}",website:"${formTarget.website.value}",category:"${category}",orgination:"${formTarget.orgination.value}",slug:"${slug}",tag:"${chip}",createdAt:"${date}"}){
                 name
                 desc
                 tag
@@ -190,6 +190,30 @@ export default function AddProject() {
                 required
                 fullWidth
                 placeholder="Tags"
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                multiline
+                name="git"
+                label="Github Link"
+                type="git"
+                id="git"
+                autoComplete="current-git"
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                multiline
+                name="website"
+                label="Website"
+                type="website"
+                id="website"
+                autoComplete="current-website"
               />
               <Button
                 type="submit"

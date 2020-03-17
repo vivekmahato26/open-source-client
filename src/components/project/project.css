@@ -1,0 +1,60 @@
+.projectCard {
+    min-width: 275px;
+}
+.title {
+    font-size: 14;
+    display: flex;
+    align-items: center;
+    
+  }
+  .title > * {
+    margin: 1px,
+  }
+
+.underline{
+    width: 100%;
+    height : 5px;
+    background: #ababab;
+    margin: 1.7rem auto;
+  }
+  .screenName {
+      margin-bottom: 12px;
+  }
+
+  .paper {
+    background: #f7f7f7;
+    padding: 5px;
+    margin-bottom: 8px;
+  }
+
+  .tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    
+  }
+  .tags div {
+    margin: 1.5px;
+  }
+
+  .cardActions {
+      display: block;
+  }
+
+.rightAligned {
+    float: right;
+}
+.anchorStyle  {
+    display: flex;
+    text-decoration: none;
+    font-size: 1rem;
+    color: #2979ff;
+    margin: 2px;
+  }
+  
+.anchorStyleButton  {
+    display: flex;
+    text-decoration: none;
+    font-size: 1rem;
+    color: #3f51b5;
+  }

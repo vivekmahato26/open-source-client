@@ -73,6 +73,8 @@ export default function Project(props) {
 
   const [projects, setProjects] = useState({ projects: [] });
   const [length, setLength] = useState({ length: 0 });
+  const [likes, setLikes] = useState([]);
+  const [activeId,setActiveId] = useState([]) ;
 
   const handleFilterCategory = (event) => {
     fetchProjects(null,event.target.innerText);
@@ -80,7 +82,31 @@ export default function Project(props) {
   const handleFilterTag = (event) => {
     fetchProjects(event.target.innerText,null);
   }
-
+  
+  const handleLike = (projectId) => {
+    let args;
+      const liked = activeId.find((l) => {return l.value===projectId});
+      if(liked) {
+        args = {
+          id: projectId,
+          action: "dislike"
+        };
+        handleLikeProject(args);
+        setActiveId(activeId.filter(item => item.value !== liked.value));
+      }
+      else {
+        args = {
+          id: projectId,
+          action: "like"
+        };
+        handleLikeProject(args);
+        setActiveId([...activeId,{
+          id:activeId.length,
+          value: projectId
+        }]); 
+      }
+           
+  }
   
 
   const fetchProjects = (tag,category) => {
@@ -139,6 +165,61 @@ export default function Project(props) {
         console.log(err);
       });
   };
+
+  const handleLikeProject = (args) => {
+    let requestBody
+    if(args.action === 'like') {
+      requestBody = {
+        query: `
+              mutation {
+                addLikes(projectId:"${args.id}"){
+                  _id
+                  likes {
+                    _id
+                  }
+                }
+              }
+            `
+      };
+    }
+    if(args.action === "dislike") {
+      requestBody = {
+        query: `
+              mutation {
+                dislike(projectId:"${args.id}"){
+                  _id
+                  likes {
+                    _id
+                  }
+                }
+              }
+            `
+      };
+    }
+    const token = localStorage.getItem("token");
+    fetch("https://open-source-server.herokuapp.com/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed!");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        const projects = resData.data.projects;
+        setLikes(projects);
+        
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 
   if (length.length === 0) {
     fetchProjects();
@@ -219,8 +300,8 @@ export default function Project(props) {
             </Grid>
           </CardContent>
           <CardActions className={classes.block}>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon color="secondary" />
+            <IconButton aria-label="Likes">
+              <FavoriteIcon  color={(activeId.find((l) => {return l.value===projectId})) ?"secondary" : "disabled"} onClick={() =>{handleLike(projectId)}} />
             </IconButton>
             <IconButton aria-label="share">
               <ShareIcon />

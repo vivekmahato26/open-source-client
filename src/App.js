@@ -11,6 +11,7 @@ import SingleProject from './pages/SingleProject';
 import Error from './pages/Error';
 import AuthContextProvider from './context/auth';
 
+
 function App() {
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
