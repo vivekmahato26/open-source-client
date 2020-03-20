@@ -12,7 +12,7 @@ import categories from "../data";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Card from "@material-ui/core/Card";
-import TagCard from "../components/tag";
+import TagCard from "../components/helpers/tag";
 
 const useStyles = makeStyles(theme => ({
   root: {

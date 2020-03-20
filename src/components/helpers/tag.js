@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Chip from "@material-ui/core/Chip";
 import Card from "@material-ui/core/Card";
-import { Link } from "react-router-dom";
 
 
 export default class tags extends Component {
@@ -21,6 +20,52 @@ export default class tags extends Component {
     this.props.onTagClick(event.target.innerText);
   }
 
+
+  remove_duplicates(array_){
+    var ret_array = new Array();
+    for (var a = array_.length - 1; a >= 0; a--) {
+        for (var b = array_.length - 1; b >= 0; b--) {
+            if(array_[a] == array_[b] && a != b){
+                delete array_[b];
+            }
+        };
+        if(array_[a] != undefined)
+            ret_array.push(array_[a]);
+    };
+    return ret_array.reverse();
+  }
+
+  sortByFrequency(array) {
+  var frequency = {};
+  var sortAble = [];
+  var newArr = [];
+
+  array.forEach(function(value) { 
+      if ( value in frequency )
+          frequency[value] = frequency[value] + 1;
+      else
+          frequency[value] = 1;
+  });
+  
+
+  for(var key in frequency){
+      sortAble.push([key, frequency[key]])
+  }
+
+  sortAble.sort(function(a, b){
+      return b[1] - a[1]
+  })
+
+  
+  sortAble.forEach(function(obj){
+      for(var i=0; i < obj[1]; i++){
+          newArr.push(obj[0]);
+      }
+  })
+  return newArr;
+  
+  }
+
   fetchProjects = () => {
     const requestBody = {
       query: `
@@ -32,7 +77,7 @@ export default class tags extends Component {
           `
     };
 
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch(" https://open-source-server.herokuapp.com/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -47,14 +92,20 @@ export default class tags extends Component {
       })
       .then(resData => {
         const projects = resData.data.projects;
+        let temp = this.state.tagArr;
         projects.map(tagsA =>
           tagsA.tag.map(t => {
-            this.setState(prevState => ({
-              tagArr: [...prevState.tagArr, t]
-            }));
+            temp.push(t);
             return t;
           })
         );
+        temp = this.sortByFrequency(temp);
+        temp = this.remove_duplicates(temp);
+        temp = temp.slice(0,15);
+        this.setState(prevState => ({
+          
+          tagArr: [...temp]
+        }))
       })
       .catch(err => {
         console.log(err);

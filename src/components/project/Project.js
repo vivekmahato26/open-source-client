@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -71,10 +71,15 @@ const anchorStyleButton = {
 
 export default function Project(props) {
 
-  const [projects, setProjects] = useState({ projects: [] });
+  let liked = false;
+  const userId = localStorage.getItem('userId');
+
+  const [projects, setProjects] = useState([]);
   const [length, setLength] = useState({ length: 0 });
-  const [likes, setLikes] = useState([]);
-  const [activeId,setActiveId] = useState([]) ;
+  const [activeId,setActiveId] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [page,setPage] = useState(0);
+
 
   const handleFilterCategory = (event) => {
     fetchProjects(null,event.target.innerText);
@@ -83,31 +88,52 @@ export default function Project(props) {
     fetchProjects(event.target.innerText,null);
   }
   
-  const handleLike = (projectId) => {
+  const handleLike = (index) => {
     let args;
-      const liked = activeId.find((l) => {return l.value===projectId});
-      if(liked) {
+    let placeholder = [];
+    let tempArr = activeId;
+    
+      if(activeId[index].liked) {
+        liked = false;
         args = {
-          id: projectId,
+          id: activeId[index].projectId,
+          index, 
           action: "dislike"
         };
         handleLikeProject(args);
-        setActiveId(activeId.filter(item => item.value !== liked.value));
+        tempArr[index].liked = false;
+        tempArr[index].count = tempArr[index].count - 1;
+        tempArr[index].userIds.filter(function (params) {
+          var id = params._id;
+          return id !== userId
+        });
+        setActiveId(prevState =>  [...placeholder,...tempArr]);
+        
       }
       else {
         args = {
-          id: projectId,
+          id: activeId[index].projectId,
+          index,
           action: "like"
         };
+        tempArr[index].liked = true;
+        tempArr[index].count = tempArr[index].count + 1;
+        tempArr[index].userIds.push({_id:userId});
         handleLikeProject(args);
-        setActiveId([...activeId,{
-          id:activeId.length,
-          value: projectId
-        }]); 
+        setActiveId(prevState =>  [...placeholder,...tempArr]); 
       }
            
   }
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
+  function handleScroll() {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+    setIsFetching(true);
+  }
 
   const fetchProjects = (tag,category) => {
     if(tag) {
@@ -134,6 +160,9 @@ export default function Project(props) {
                 tag
                 category
                 createdAt
+                likes {
+                  _id
+                }
                 admin {
                   _id
                   sname
@@ -143,12 +172,14 @@ export default function Project(props) {
             }
           `
     };
+    
 
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch(` https://open-source-server.herokuapp.com/graphql?page=${page}&records=${4}`, {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        
       }
     })
       .then(res => {
@@ -158,13 +189,47 @@ export default function Project(props) {
         return res.json();
       })
       .then(resData => {
-        const projects = resData.data.projects;
-        setProjects({ projects });
+        const projectArr = resData.data.projects;
+        
+          projectArr.map(p => {
+            var like = {
+              projectId: p._id,
+              userId: p.likes
+            }
+            var ifLiked = false;
+            like.userId.map(uid => {
+              if(uid._id === userId) {
+                ifLiked = true;
+              }
+            });
+            setActiveId(prevState => [...prevState,{
+              id:activeId.length,
+              projectId: like.projectId,
+              userIds: like.userId,
+              count: p.likes.length,
+              liked: ifLiked
+            }]);
+          })
+          setPage(page+1);
+        if(projectArr.length === 0) {
+          setIsFetching(true);
+        }
+        else {
+          setIsFetching(false);
+          setProjects(prevProjects => ([...prevProjects, ...projectArr]));
+          
+        }
+        
       })
       .catch(err => {
         console.log(err);
       });
   };
+
+  useEffect(() => {
+    if (!isFetching) return;
+    fetchProjects();
+  }, [isFetching]);
 
   const handleLikeProject = (args) => {
     let requestBody
@@ -197,7 +262,7 @@ export default function Project(props) {
       };
     }
     const token = localStorage.getItem("token");
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch(" https://open-source-server.herokuapp.com/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -212,18 +277,18 @@ export default function Project(props) {
         return res.json();
       })
       .then(resData => {
-        const projects = resData.data.projects;
-        setLikes(projects);
-        
+        return resData;
       })
       .catch(err => {
         console.log(err);
       });
   }
 
+
+  
   if (length.length === 0) {
     fetchProjects();
-    setLength({ length: Object.keys(projects).length });
+    setLength({length: 4})
   }
   if(props.filterProject) {
     if(props.filterProject.tag) {
@@ -237,9 +302,11 @@ export default function Project(props) {
   const classes = useStyles();
   const line = <div className={classes.underline}></div>;
 
-  const projectList = projects.projects;
-  let proj = projectList.map(project => {
+  const projectList = projects;
+  let proj = projectList.map((project,index) => {
     const projectId = project._id;
+    
+
     return (
       <React.Fragment  key={projectId}>
         <br />
@@ -277,9 +344,9 @@ export default function Project(props) {
             </Typography>
             {line}
             <Typography className={classes.pos} color="textSecondary">
-              <Link to="/profile" style={anchorStyle}>
-                {project.admin.sname}
-              </Link>
+              
+                {(project.orgination !== undefined)? project.orgination : <Link to="/profile" style={anchorStyle}>project.admin.sname</Link>}
+              
             </Typography>
             <Typography variant="body2" component="span">
               <Paper className={classes.paper}>{project.desc}</Paper>
@@ -300,8 +367,9 @@ export default function Project(props) {
             </Grid>
           </CardContent>
           <CardActions className={classes.block}>
-            <IconButton aria-label="Likes">
-              <FavoriteIcon  color={(activeId.find((l) => {return l.value===projectId})) ?"secondary" : "disabled"} onClick={() =>{handleLike(projectId)}} />
+            <IconButton aria-label="Likes" onClick={() =>{handleLike(index)}} >
+              <FavoriteIcon   color={(activeId[index].liked) ?"secondary" : "disabled"} />
+              {(activeId[index].count !== 0) && <Typography>{(activeId[index].count === 1) ? `${activeId[index].count} Like`: `${activeId[index].count} Likes`}</Typography>}
             </IconButton>
             <IconButton aria-label="share">
               <ShareIcon />
@@ -330,5 +398,5 @@ export default function Project(props) {
             
           </>
   }
-  return <div>{proj}</div>;
+  return <div id="project-main" >{proj}</div>;
 }

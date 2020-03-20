@@ -1,7 +1,7 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import './App.css';
-import Navbar from './components/Navbar';
+import Navbar from './components/helpers/Navbar';
 import Home from './pages/Home';
 import Signin from './components/Auth/Signin';
 import Signup from './components/Auth/Signup';

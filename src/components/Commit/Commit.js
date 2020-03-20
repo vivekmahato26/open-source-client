@@ -61,7 +61,7 @@ export default function Commit(props) {
             `
     };
     const token = localStorage.getItem("token");
-    fetch("https://open-source-server.herokuapp.com/graphql", {
+    fetch(" https://open-source-server.herokuapp.com/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
