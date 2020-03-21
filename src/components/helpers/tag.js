@@ -77,7 +77,7 @@ export default class tags extends Component {
           `
     };
 
-    fetch(" https://open-source-server.herokuapp.com/graphql", {
+    fetch(" https://open-source-server.herokuapp.com/graphql?records=20", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
