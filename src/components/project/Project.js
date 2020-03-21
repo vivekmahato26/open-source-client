@@ -69,23 +69,41 @@ const anchorStyleButton = {
   color: "#3f51b5"
 };
 
+
+
 export default function Project(props) {
 
-  let liked = false;
   const userId = localStorage.getItem('userId');
-
+  const [filterProj,setFilterProj] = useState({
+    tag:null,
+    category:null
+  })
   const [projects, setProjects] = useState([]);
   const [length, setLength] = useState({ length: 0 });
   const [activeId,setActiveId] = useState([]);
+  const [filter,setFilter] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [page,setPage] = useState(0);
+  const [prevFilter,setPrevFilter] = useState(null);
 
 
   const handleFilterCategory = (event) => {
-    fetchProjects(null,event.target.innerText);
+    setFilter(true);
+    let filterP = {
+      tag: null,
+      category: event.target.innerText
+    };
+    setFilterProj(prevState => filterP);
+    fetchProjects(null,filterProj.category);
   }
   const handleFilterTag = (event) => {
-    fetchProjects(event.target.innerText,null);
+    setFilter(true);
+    let filterP = {
+      tag: event.target.innerText,
+      category: null
+    };
+    setFilterProj(prevState => filterP);
+    fetchProjects(filterProj.tag,null);
   }
   
   const handleLike = (index) => {
@@ -94,7 +112,6 @@ export default function Project(props) {
     let tempArr = activeId;
     
       if(activeId[index].liked) {
-        liked = false;
         args = {
           id: activeId[index].projectId,
           index, 
@@ -132,6 +149,7 @@ export default function Project(props) {
   
   function handleScroll() {
     if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+    setPage(prevState => (prevState + 1));
     setIsFetching(true);
   }
 
@@ -210,15 +228,25 @@ export default function Project(props) {
               liked: ifLiked
             }]);
           })
-          setPage(page+1);
         if(projectArr.length === 0) {
           setIsFetching(true);
+          if(tag || category) {
+            if(page !== 0) {
+              setIsFetching(true);
+              return;
+            }
+              setIsFetching(true);
+              setProjects(prevProjects => ([...projectArr]));
+          }
         }
-        else {
-          setIsFetching(false);
-          setProjects(prevProjects => ([...prevProjects, ...projectArr]));
-          
-        }
+        else if(tag || category) {
+            setIsFetching(false);
+            setProjects(prevProjects => ([...projectArr]));
+          }
+          else {
+            setIsFetching(false);
+            setProjects(prevProjects => ([...prevProjects, ...projectArr]));
+          }
         
       })
       .catch(err => {
@@ -228,6 +256,10 @@ export default function Project(props) {
 
   useEffect(() => {
     if (!isFetching) return;
+    if(filter) {
+      fetchProjects(filterProj.tag,filterProj.category);
+      return;
+    }
     fetchProjects();
   }, [isFetching]);
 
@@ -283,20 +315,36 @@ export default function Project(props) {
         console.log(err);
       });
   }
-
-
   
   if (length.length === 0) {
     fetchProjects();
     setLength({length: 4})
   }
-  if(props.filterProject) {
-    if(props.filterProject.tag) {
+
+
+  if(prevFilter !== props.filterProject.exec) {
+    setPage(0);
+      if(props.filterProject.tag) {
+      setFilter(true);
+      let filterP = {
+        tag: props.filterProject.tag,
+        category: null
+      };
+      setFilterProj( filterP);
+      setIsFetching(true);
       fetchProjects(props.filterProject.tag,null);
     }
     if(props.filterProject.category) {
+     setFilter(true);
+      let filterP = {
+        tag: null,
+        category: props.filterProject.category
+      };
+      setFilterProj(prevState => filterP);
+      setIsFetching(true);
       fetchProjects(null,props.filterProject.category);
-      }
+    }
+    setPrevFilter(props.filterProject.exec);
   }
 
   const classes = useStyles();

@@ -25,11 +25,11 @@ export default class tags extends Component {
     var ret_array = new Array();
     for (var a = array_.length - 1; a >= 0; a--) {
         for (var b = array_.length - 1; b >= 0; b--) {
-            if(array_[a] == array_[b] && a != b){
+            if(array_[a] === array_[b] && a !== b){
                 delete array_[b];
             }
         };
-        if(array_[a] != undefined)
+        if(array_[a] !== undefined)
             ret_array.push(array_[a]);
     };
     return ret_array.reverse();

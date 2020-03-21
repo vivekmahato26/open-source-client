@@ -38,11 +38,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [filter, setFilter] = useState();
+  const [filter, setFilter] = useState({exec: false});
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    console.log();
+    return;
   });
 
   return (
@@ -60,7 +60,7 @@ export default function Home() {
                       <MenuItem
                         key={c.index}
                         className={classes.menuItems}
-                        onClick={() => setFilter({category:c.value})}
+                        onClick={() => setFilter({category:c.value,exec:c.value})}
                       >
                         {c.value}
                       </MenuItem>
@@ -75,7 +75,7 @@ export default function Home() {
             </Grid>
             <Grid item xs={3}>
               
-                <TagCard onTagClick={(args) => setFilter({tag:args})}/>
+                <TagCard onTagClick={(args) => setFilter({tag:args,exec:args})}/>
             </Grid>
           </Grid>
         </Paper>
