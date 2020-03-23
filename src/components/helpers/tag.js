@@ -22,7 +22,7 @@ export default class tags extends Component {
 
 
   remove_duplicates(array_){
-    var ret_array = new Array();
+    var ret_array = [];
     for (var a = array_.length - 1; a >= 0; a--) {
         for (var b = array_.length - 1; b >= 0; b--) {
             if(array_[a] === array_[b] && a !== b){

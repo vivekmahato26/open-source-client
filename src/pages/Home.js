@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import { Paper } from "@material-ui/core";
 
 import Projects from "../components/project/Project";
-import AddProject from "../components/project/AddProject";
 import ProfileCard from "./User";
 import categories from "../data";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -32,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   sticky: {
     position: "sticky",
-    top: "11%"
+    top: "13%"
   }
 }));
 
@@ -70,11 +69,9 @@ export default function Home() {
               </Card>
             </Grid>
             <Grid item xs={6}>
-              {token && <AddProject />}
               <Projects filterProject={filter} />
             </Grid>
             <Grid item xs={3}>
-              
                 <TagCard onTagClick={(args) => setFilter({tag:args,exec:args})}/>
             </Grid>
           </Grid>

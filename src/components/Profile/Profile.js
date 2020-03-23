@@ -1,5 +1,4 @@
-import React, {useState} from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { Paper, Card } from "@material-ui/core";
@@ -9,9 +8,8 @@ import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import Chip from "@material-ui/core/Chip";
-import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
-
+import Project from "../project/Project";
 
 import EditProfile from "./EditProfile";
 
@@ -47,25 +45,30 @@ const useStyles = makeStyles(theme => ({
   title: {
     fontSize: 14,
     display: "-webkit-box",
-    alignItems: 'center',
-    '& > *': {
-      margin: "1px",
+    alignItems: "center",
+    "& > *": {
+      margin: "1px"
     }
+  },
+  sticky: {
+    position: "sticky",
+    top: "13%",
+    alignItems: "center",
+    textAlign: "center"
   }
 }));
 
 const anchorStyle = {
-  justifyContent: "center",
   display: "flex",
   textDecoration: "none",
-  fontSize: "1rem",
-  color: "#2979ff"
+  margin: "5px",
+  marginLeft: "33%"
 };
 
 export default function Profile(props) {
   const classes = useStyles();
   const userDetails = props.user;
-  const [projects,setProjects] = useState({ projects: [] });
+  const [projects, setProjects] = useState({ projects: [] });
   const [length, setLength] = useState(0);
   let userName = {};
   let social = {
@@ -82,11 +85,10 @@ export default function Profile(props) {
     let t = temp.pop();
     userName[key] = t;
   }
-  const fetchProjects = (arg) => {
-    if(arg) {
+  const fetchProjects = arg => {
+    if (arg) {
       arg = `"${arg}"`;
-    }
-    else {
+    } else {
       arg = null;
     }
     const requestBody = {
@@ -123,146 +125,111 @@ export default function Profile(props) {
         console.log(err);
       });
   };
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem("userId");
   if (length === 0) {
     fetchProjects(userId);
     setLength(Object.keys(projects).length);
   }
   const projectsDetails = projects.projects;
+  console.log(projectsDetails);
+  
 
   return (
     <>
       <div className={classes.root}>
         <Grid style={{ background: "#e8e8e8" }} container spacing={3}>
-          <Grid item xs={9}>
-            <Paper className={classes.paper}>
-              <AccountBoxRoundedIcon fontSize="large" color="primary" />
-              <EditProfile />
-              <h3>{userDetails.name}</h3>
-              <h4>{userDetails.sname}</h4>
-              <Paper className={classes.fontClass}>{userDetails.bio}</Paper>
-              <Grid container spacing={3} className={classes.social}>
-                <Grid item xs={3}>
-                  <a
-                    style={anchorStyle}
-                    href={social.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Chip
-                      avatar={
-                        <Avatar className={classes.mainWhite}>
-                          {" "}
-                          <GitHubIcon color="primary" />
-                        </Avatar>
-                      }
-                      label={userName.github}
-                      clickable
-                      variant="outlined"
-                    />
-                  </a>
-                </Grid>
-                <Grid item xs={3}>
-                  <a
-                    style={anchorStyle}
-                    href={social.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Chip
-                      avatar={
-                        <Avatar className={classes.mainWhite}>
-                          <LinkedInIcon color="primary" />
-                        </Avatar>
-                      }
-                      label={userName.linkedin}
-                      clickable
-                      variant="outlined"
-                    />
-                  </a>
-                </Grid>
-                <Grid item xs={3}>
-                  <a
-                    style={anchorStyle}
-                    href={social.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Chip
-                      avatar={
-                        <Avatar className={classes.mainWhite}>
-                          <FacebookIcon color="primary" />
-                        </Avatar>
-                      }
-                      label={userName.facebook}
-                      clickable
-                      variant="outlined"
-                    />
-                  </a>
-                </Grid>
-                <Grid item xs={3}>
-                  <a
-                    style={anchorStyle}
-                    href={social.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Chip
-                      avatar={
-                        <Avatar className={classes.mainWhite}>
-                          {" "}
-                          <TwitterIcon color="primary" />
-                        </Avatar>
-                      }
-                      label={userName.twitter}
-                      clickable
-                      variant="outlined"
-                    />
-                  </a>
-                </Grid>
-              </Grid>
-            </Paper>
-              <Paper className={classes.paper}>
-                <Grid container spacing={3} >
-                    <Card>
-                    <h3 >Projects</h3>
-                      {projectsDetails && projectsDetails.slice(0,4).map(project => {
-                        const projectId = project._id;
-                        return (<Typography component={"span"}
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        <Link
-                          to={{
-                            pathname: `/projects/${project.slug}`,
-                            state: {
-                              projectId: { projectId }
-                            }
-                          }}
-                          style={anchorStyle}
-                        >
-                          {project.name}
-                        </Link>
-                        <Chip
-                            avatar={<Avatar>{project.category[0].toUpperCase()}</Avatar>}
-                            label={project.category}
-                            clickable
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => {
-                              
-                            }}
-                          />
-                      </Typography>)
-                      })}
-                    </Card>
-                </Grid>
-              </Paper>
-            </Grid>
-          
           <Grid item xs={3}>
-            <Paper className={classes.paper}>news</Paper>
+            <Card className={classes.sticky}>
+              <AccountBoxRoundedIcon fontSize="large" color="primary" />
+              <p>{userDetails.name}</p>
+              <p>{userDetails.sname}</p>
+              <Paper className={classes.fontClass}>{userDetails.bio}</Paper>
+              <div>
+              <a
+                style={anchorStyle}
+                href={social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Chip
+                  avatar={
+                    <Avatar className={classes.mainWhite}>
+                      <GitHubIcon color="primary" />
+                    </Avatar>
+                  }
+                  label={userName.github}
+                  clickable
+                  variant="outlined"
+                />
+              </a>
+
+              <a
+                style={anchorStyle}
+                href={social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Chip
+                  avatar={
+                    <Avatar className={classes.mainWhite}>
+                      <LinkedInIcon color="primary" />
+                    </Avatar>
+                  }
+                  label={userName.linkedin}
+                  clickable
+                  variant="outlined"
+                />
+              </a>
+
+              <a
+                style={anchorStyle}
+                href={social.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Chip
+                  avatar={
+                    <Avatar className={classes.mainWhite}>
+                      <FacebookIcon color="primary" />
+                    </Avatar>
+                  }
+                  label={userName.facebook}
+                  clickable
+                  variant="outlined"
+                />
+              </a>
+
+              <a
+                style={anchorStyle}
+                href={social.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Chip
+                  avatar={
+                    <Avatar className={classes.mainWhite}>
+                      {" "}
+                      <TwitterIcon color="primary" />
+                    </Avatar>
+                  }
+                  label={userName.twitter}
+                  clickable
+                  variant="outlined"
+                />
+              </a>
+              
+              </div>
+              <EditProfile />
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Project filterProject={{ exec: "test" }} />
+          </Grid>
+          <Grid item xs={3} className={classes.sticky}>
+            <Card className={classes.sticky}>
+              <h4>Followers</h4>
+              Activity
+            </Card>
           </Grid>
         </Grid>
       </div>

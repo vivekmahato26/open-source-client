@@ -26,8 +26,8 @@ function App() {
             <Route exact path='/' component={Home}/>
             <Route exact path='/signin' component={Signin}/>
             <Route exact path='/signup' component={Signup}/>
+            <Route exact path='/projects' component={Project}/>
             <Route exact path='/:slug' component={User}/>
-            <Route exact path='/project' component={Project}/>
             <Route exaxt path='/projects/:slug' component = {SingleProject}/>
             <Route component={Error}/>
           </Switch>

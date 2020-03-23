@@ -17,12 +17,6 @@ const useStyles = makeStyles({
   root: {
     minWidth: 275
   },
-  underline: {
-    width: "100%",
-    height: "5px",
-    background: "#ababab",
-    margin: "1.7rem auto"
-  },
   title: {
     fontSize: 14,
     display: "flex",
@@ -219,6 +213,7 @@ export default function Project(props) {
               if(uid._id === userId) {
                 ifLiked = true;
               }
+              return uid;
             });
             setActiveId(prevState => [...prevState,{
               id:activeId.length,
@@ -227,6 +222,7 @@ export default function Project(props) {
               count: p.likes.length,
               liked: ifLiked
             }]);
+            return p;
           })
         if(projectArr.length === 0) {
           setIsFetching(true);
@@ -247,7 +243,7 @@ export default function Project(props) {
             setIsFetching(false);
             setProjects(prevProjects => ([...prevProjects, ...projectArr]));
           }
-        
+        return;
       })
       .catch(err => {
         console.log(err);
@@ -348,7 +344,7 @@ export default function Project(props) {
   }
 
   const classes = useStyles();
-  const line = <div className={classes.underline}></div>;
+  const line = <div className="underline"></div>;
 
   const projectList = projects;
   let proj = projectList.map((project,index) => {
@@ -357,7 +353,7 @@ export default function Project(props) {
 
     return (
       <React.Fragment  key={projectId}>
-        <br />
+        
         <Card
          
           raised= {true}
@@ -374,7 +370,7 @@ export default function Project(props) {
                 to={{
                   pathname: `/projects/${project.slug}`,
                   state: {
-                    projectId: { projectId }
+                     project:{project}
                   }
                 }}
                 style={anchorStyle}
@@ -437,6 +433,7 @@ export default function Project(props) {
             </Button>
           </CardActions>
         </Card>
+        <br />
       </React.Fragment>
     );
   });

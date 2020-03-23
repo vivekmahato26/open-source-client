@@ -14,9 +14,17 @@ import {
   Button,
   Typography,
   CssBaseline,
-  Container,
   Grid
 } from "@material-ui/core";
+import {Link} from 'react-router-dom';
+const anchorStyle = {
+  textDecoration: "none",
+  background: "#3f51b5",
+  color: "#fff",
+  borderRadius: "5px",
+  padding: "10px",
+  marginRight: "5px"
+}
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -39,10 +47,18 @@ const useStyles = makeStyles(theme => ({
   },
   textField: {
     width: 300,
+  },
+  buttons: {
+    justifyContent: "center",
+    '& > *': {
+      margin: "5px"
+    }
   }
 }));
 
 const EditProfile = () => {
+  const token = localStorage.getItem("token");
+
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -107,13 +123,12 @@ const EditProfile = () => {
 
   const classes = useStyles();
   return (
-    <Container component="main" maxWidth="sm">
+    <>
       <CssBaseline />
-      <Grid container spacing={3}>
-        <Grid item xs={11} />
-        <Grid item xs={1}>
-          <Button
-            style={{ float: "right" }}
+      {token && (
+        <div className={classes.buttons}>
+      <Button
+            style={{width:"auto" }}
             type="button"
             fullWidth
             variant="contained"
@@ -123,9 +138,14 @@ const EditProfile = () => {
           >
             Edit
           </Button>
-        </Grid>
-      </Grid>
-
+        <Link
+          to="/projects/:slug"
+          style={anchorStyle}
+        >
+          Add Project
+        </Link>
+        </div>
+      )}
       <Modal
         className={classes.modal}
         open={open}
@@ -257,7 +277,7 @@ const EditProfile = () => {
           </div>
         </Fade>
       </Modal>
-    </Container>
+    </>
   );
 };
 

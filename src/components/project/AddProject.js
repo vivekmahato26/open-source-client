@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button,CssBaseline,
+  Container } from "@material-ui/core";
 import ChipInput from "material-ui-chip-input";
 import MenuItem from "@material-ui/core/MenuItem";
 import categories from "../../data";
+
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -26,7 +25,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddProject() {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
 
   const [category, setCategory] = useState("");
 
@@ -40,13 +38,6 @@ export default function AddProject() {
     return 1;
   };
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const addProject = event => {
     event.preventDefault();
@@ -94,7 +85,6 @@ export default function AddProject() {
       .then(resData => {
         const data = resData.data.addProject;
         if (data !== null) {
-          handleClose();
           window.location.reload(true);
         }
       })
@@ -104,33 +94,11 @@ export default function AddProject() {
       });
   };
 
-  const token = localStorage.getItem("token");
 
   return (
-    <div>
-      {token && (
-        <Button
-          type="button"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          onClick={handleOpen}
-        >
-          Add Project
-        </Button>
-      )}
-      <Modal
-        className={classes.modal}
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500
-        }}
-      >
-        <Fade in={open}>
+    <Container component="main" maxWidth="sm">
+      <CssBaseline />
+      
           <div className={classes.paper}>
             <form className={classes.form} noValidate onSubmit={addProject}>
               <TextField
@@ -226,8 +194,7 @@ export default function AddProject() {
               </Button>
             </form>
           </div>
-        </Fade>
-      </Modal>
-    </div>
+        
+    </Container>
   );
 }
