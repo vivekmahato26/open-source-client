@@ -52,7 +52,6 @@ export default function Home() {
           <Grid container spacing={3}>
             <Grid item xs={3}>
               {token && <ProfileCard type={"card"} />}
-              <br />
               <Card className={classes.sticky}>
                 <MenuList>
                   {categories.categories.map(c => {

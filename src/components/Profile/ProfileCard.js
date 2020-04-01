@@ -14,6 +14,7 @@ import {Link} from 'react-router-dom';
 const useStyles = makeStyles({
   root: {
     maxWidth: 275,
+    marginBottom: 10
   },
   title: {
     fontSize: 14,
