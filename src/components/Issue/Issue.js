@@ -102,7 +102,6 @@ export default function Issue(props) {
       {token && (
         <Button
           type="button"
-          fullWidth
           variant="contained"
           color="primary"
           className={classes.submit}

@@ -3,7 +3,6 @@ import Profile from '../components/Profile/Profile';
 import ProfileCard from '../components/Profile/ProfileCard';
 
 export default function User(props) {
-  let type = null;
   const [user, setUser] = useState({
     user: {}
   });
@@ -20,6 +19,9 @@ export default function User(props) {
               name
               bio
               social
+              owned{
+                _id
+              }
             }
           }
         `
@@ -39,7 +41,8 @@ export default function User(props) {
         return res.json();
       })
       .then(resData => {
-        const user = resData.data.user;
+        let user = resData.data.user;
+        console.log(user);
         let social = user.social;
         user.social = [];
         social.forEach(element => {
@@ -48,7 +51,8 @@ export default function User(props) {
           let value = temp[1];
           user.social[key] = value;
         });
-        setUser({ user });
+        console.log(user);
+        setUser({user});
       })
       .catch(err => {
         console.log(err);
@@ -58,15 +62,27 @@ export default function User(props) {
     fetchUser();
   }
   
-  const userDetails = user.user;
-  if(props.type === 'card')
-    {
-      type = 'card';
+  let userDetails = user.user; 
+  if(props.location) {
+    if(props.location.state) {
+      userDetails = props.location.state.u;
+        let social = userDetails.social;
+        userDetails.social = [];
+        social.forEach(element => {
+          let temp = element.split(" ");
+          let key = temp[0];
+          let value = temp[1];
+          userDetails.social[key] = value;
+        });
     }
+  }
+
+  console.log(userDetails);
+  
   return (
     <>
-      {type && <ProfileCard user={userDetails} />}
-      {!type && <Profile user={userDetails} />}
+      {(props.type === 'card') && <ProfileCard user={userDetails} />}
+      {(props.type !== 'card') && <Profile user={userDetails} />}
     </>
   )
 }

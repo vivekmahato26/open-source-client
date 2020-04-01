@@ -101,7 +101,7 @@ export default class tags extends Component {
         );
         temp = this.sortByFrequency(temp);
         temp = this.remove_duplicates(temp);
-        temp = temp.slice(0,15);
+        temp = temp.slice(0,10);
         this.setState(prevState => ({
           
           tagArr: [...temp]
@@ -115,7 +115,7 @@ export default class tags extends Component {
   render() {
     const sticky = {
       position: "sticky",
-      top: "11%"
+      top: "13%"
     };
     const margin = {
       margin: "5px"

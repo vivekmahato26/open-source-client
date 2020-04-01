@@ -63,10 +63,11 @@ export default function SignUp() {
   const handleSubmit = event => {
     event.preventDefault();
     const formTarget = event.target;
+    const date = new Date().toISOString();
     const requestBody = {
       query: `
       mutation{
-        createUser(userLoginInput:{sname:"${formTarget.screenName.value}",email:"${formTarget.email.value}",password:"${formTarget.password.value}"}){
+        createUser(userLoginInput:{sname:"${formTarget.screenName.value}",email:"${formTarget.email.value}",password:"${formTarget.password.value}",createdAt:"${date}"}){
           _id
           email
         }

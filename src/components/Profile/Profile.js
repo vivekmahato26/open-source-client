@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import { Paper, Card } from "@material-ui/core";
+import { Paper, Card, Button } from "@material-ui/core";
 import AccountBoxRoundedIcon from "@material-ui/icons/AccountBoxRounded";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import FacebookIcon from "@material-ui/icons/Facebook";
@@ -70,6 +70,7 @@ export default function Profile(props) {
   const userDetails = props.user;
   const [projects, setProjects] = useState({ projects: [] });
   const [length, setLength] = useState(0);
+  const [follow,setFollow] = useState(false);
   let userName = {};
   let social = {
     github: "",
@@ -97,8 +98,35 @@ export default function Profile(props) {
               projects(projectFilter:{tag:[null],category:null,userId:${arg}}){
                 _id
                 name
+                desc
+                organization{
+                  name
+                  website
+                }
                 slug
+                tag
                 category
+                createdAt
+                likes {
+                  _id
+                }
+                community {
+                  github
+                  website
+                  slack
+                  facebook
+                  discord
+                  twitter
+                }
+                admin {
+                  sname
+                }
+                comments {
+                  message
+                  user {
+                    _id
+                  }
+                }
               }
             }
           `
@@ -130,9 +158,63 @@ export default function Profile(props) {
     fetchProjects(userId);
     setLength(Object.keys(projects).length);
   }
-  const projectsDetails = projects.projects;
-  console.log(projectsDetails);
-  
+  const token = localStorage.getItem("token");
+  const handleFollow = event => {
+    const action = event.target.innerText;
+    console.log(action);
+    let requestBody;
+    if(action === "FOLLOW"){
+      requestBody = {
+        query: `
+              mutation {
+                followUser(following:"${userId}"){
+                  _id
+                  sname
+                }
+              }
+            `
+      };
+    }
+    if(action === "UNFOLLOW") {
+      requestBody = {
+        query: `
+              mutation {
+                unfollowUser(following:"${userId}"){
+                  _id
+                  sname
+                }
+              }
+            `
+      };
+    }
+
+    fetch(" https://open-source-server.herokuapp.com/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer "+ token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed!");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        const follow = resData.data.users;
+        if(action === "FOLLOW") {
+          setFollow(true);
+        }
+        if(action === "UNFOLLOW") {
+          setFollow(false);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 
   return (
     <>
@@ -219,7 +301,7 @@ export default function Profile(props) {
               </a>
               
               </div>
-              <EditProfile />
+              {(userDetails._id === userId) && <EditProfile />}
             </Card>
           </Grid>
           <Grid item xs={6}>
@@ -227,8 +309,14 @@ export default function Profile(props) {
           </Grid>
           <Grid item xs={3} className={classes.sticky}>
             <Card className={classes.sticky}>
-              <h4>Followers</h4>
-              Activity
+              {token && (userDetails._id !== userId) && <Button
+              color="primary"
+              variant={(!follow)? "outlined" : "contained"}
+              width="contained"
+              onClick={handleFollow}
+              >
+                {(!follow)? "Follow" : "Unfollow"}
+              </Button>}
             </Card>
           </Grid>
         </Grid>

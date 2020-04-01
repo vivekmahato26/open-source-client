@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React from "react";
 import { withRouter } from "react-router";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,6 +14,9 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import Avatar from "@material-ui/core/Avatar";
 import Chip from "@material-ui/core/Chip";
 import { FaDiscord, FaSlack } from "react-icons/fa";
+import Issue from "../components/Issue/Issue";
+import AddProject from "../components/project/AddProject"; 
+import UpdateProject from "../components/project/UpdateProject";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,7 +53,6 @@ const chip = {
 };
 
 const anchorStyle = {
-  justifyContent: "center",
   display: "flex",
   textDecoration: "none",
   fontSize: "1rem",
@@ -61,19 +63,17 @@ const anchorStyle = {
 
 function SingleProject(props) {
   const classes = useStyles();
-  const [community, setCommunity] = useState([
+  let community = [
     {
-      key: "Website",
+      key: "website",
       icon: <LinkIcon color="primary" />,
-      value: "Website"
     },
     {
-      key: "Github",
+      key: "github",
       icon: <GitHubIcon color="primary" />,
-      value: "Github"
     },
     {
-      key: "Discord",
+      key: "discord",
       icon: (
         <IconContext.Provider
           value={{
@@ -87,10 +87,9 @@ function SingleProject(props) {
           </div>
         </IconContext.Provider>
       ),
-      value: "Discord"
     },
     {
-      key: "Slack",
+      key: "slack",
       icon: (
         <IconContext.Provider
           value={{
@@ -104,23 +103,25 @@ function SingleProject(props) {
           </div>
         </IconContext.Provider>
       ),
-      value: "Slack"
     },
     {
-      key: "Twitter",
+      key: "twitter",
       icon: <TwitterIcon color="primary" />,
-      value: "Twitter"
     },
     {
-      key: "Facebook",
+      key: "facebook",
       icon: <FacebookIcon color="primary" />,
-      value: "Facebook"
     }
-  ]);
+  ];
 
-  const projectDetails = props.location.state.project.project;
-  return (
-    <>
+  let projPage;
+  const token = localStorage.getItem("token");
+
+  if (props.location.state.type === "card") {
+    projPage = <AddProject />
+  } else {
+    const projectDetails = props.location.state.project.project;
+    projPage = (
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <Grid container spacing={3}>
@@ -128,14 +129,33 @@ function SingleProject(props) {
               <Card className={classes.sticky}>
                 <Typography component="span" style={{ textAlign: "center" }}>
                   <p>{projectDetails.name}</p>
-                  <p>{projectDetails.orgination}</p>
+                  <a href={projectDetails.organization.website} style={{textDecoration:"none",display:"block"}} target="_blank">
+                        <Chip
+                          style={chip}
+                         
+                          avatar={
+                            <Avatar>
+                              {projectDetails.organization.name[0]}
+                            </Avatar>
+                          }
+                          label={projectDetails.organization.name}
+                          clickable
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </a>
                   <div className="underline"></div>
                   <p>{projectDetails.category}</p>
                 </Typography>
                 <div className={classes.chip}>
                   {community.map(c => {
+                    let link = projectDetails.community[c.key];
+                    let site;
+                    if(link){
+                      site = link.slice(8);
+                    }
                     return (
-                      <a targer="_blank" href={c.link} style={anchorStyle}>
+                      <a href={link} style={anchorStyle} target="_blank">
                         <Chip
                           style={chip}
                           key={c.key}
@@ -144,7 +164,7 @@ function SingleProject(props) {
                               {c.icon}
                             </Avatar>
                           }
-                          label={c.value}
+                          label={site}
                           clickable
                           variant="outlined"
                         />
@@ -152,6 +172,7 @@ function SingleProject(props) {
                     );
                   })}
                 </div>
+                <UpdateProject project={projectDetails}/>
               </Card>
             </Grid>
             <Grid item xs={6}>
@@ -160,18 +181,19 @@ function SingleProject(props) {
                   <p>{projectDetails.desc}</p>
                 </Typography>
                 <Typography component="span" style={{ textAlign: "center" }}>
-                  <p>Who's using {projectDetails.name}?</p>
+                  <p>Who's using {projectDetails.name} ?</p>
                 </Typography>
               </Card>
             </Grid>
             <Grid item xs={3}>
               <Card>
-              <Typography component="span" style={{ textAlign: "center" }}>
+                <Typography component="span" style={{ textAlign: "center" }}>
                   <p>Contributers</p>
                   <div className="underline"></div>
                 </Typography>
                 <Typography component="span" style={{ textAlign: "center" }}>
                   <p>Issues</p>
+                  {token && <Issue projectId={projectDetails._id} />}
                   <div className="underline"></div>
                 </Typography>
               </Card>
@@ -179,8 +201,10 @@ function SingleProject(props) {
           </Grid>
         </Paper>
       </div>
-    </>
-  );
+    );
+  }
+
+  return <>{projPage}</>;
 }
 
-export default withRouter(SingleProject);
+export default SingleProject;

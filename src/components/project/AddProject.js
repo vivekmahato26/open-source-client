@@ -16,17 +16,17 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-    width: 500
+    marginTop: 10,
   }
 }));
 
-export default function AddProject() {
+export default function AddProject(props) {
   const classes = useStyles();
 
   const [category, setCategory] = useState("");
+
 
   const handleChangeCategory = event => {
     setCategory(event.target.value);
@@ -58,11 +58,10 @@ export default function AddProject() {
     const requestBody = {
       query: `
             mutation{
-              addProject(projectInput:{name:"${formTarget.name.value}",desc:"${formTarget.description.value}",git:"${formTarget.git.value}",website:"${formTarget.website.value}",category:"${category}",orgination:"${formTarget.orgination.value}",slug:"${slug}",tag:"${chip}",createdAt:"${date}"}){
+              addProject(projectInput:{name:"${formTarget.name.value}",desc:"${formTarget.description.value}",category:"${category}",organization:"${formTarget.organization.value}",slug:"${slug}",tag:"${chip}",createdAt:"${date}"}){
                 name
                 desc
                 tag
-                orgination
               }
             }
             `
@@ -95,10 +94,10 @@ export default function AddProject() {
   };
 
 
+
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main">
       <CssBaseline />
-      
           <div className={classes.paper}>
             <form className={classes.form} noValidate onSubmit={addProject}>
               <TextField
@@ -144,10 +143,10 @@ export default function AddProject() {
                 margin="normal"
                 required
                 fullWidth
-                id="orgination"
-                label="Orgination"
-                name="orgination"
-                autoComplete="orgination"
+                id="organization"
+                label="Organization"
+                name="organization"
+                autoComplete="organization"
               />
               <ChipInput
                 onChange={chips => handleChange(chips)}
@@ -158,30 +157,6 @@ export default function AddProject() {
                 required
                 fullWidth
                 placeholder="Tags"
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                multiline
-                name="git"
-                label="Github Link"
-                type="git"
-                id="git"
-                autoComplete="current-git"
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                multiline
-                name="website"
-                label="Website"
-                type="website"
-                id="website"
-                autoComplete="current-website"
               />
               <Button
                 type="submit"

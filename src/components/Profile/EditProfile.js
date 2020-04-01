@@ -8,7 +8,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Fade from "@material-ui/core/Fade";
-import clsx from 'clsx';
+import clsx from "clsx";
 import {
   TextField,
   Button,
@@ -16,15 +16,17 @@ import {
   CssBaseline,
   Grid
 } from "@material-ui/core";
-import {Link} from 'react-router-dom';
+import { Link } from "react-router-dom";
 const anchorStyle = {
   textDecoration: "none",
   background: "#3f51b5",
   color: "#fff",
   borderRadius: "5px",
   padding: "10px",
-  marginRight: "5px"
-}
+  marginRight: "5px",
+  textTransform: "uppercase",
+  display: "inline-block"
+};
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -46,11 +48,11 @@ const useStyles = makeStyles(theme => ({
     fontSize: "3rem"
   },
   textField: {
-    width: 300,
+    width: 300
   },
   buttons: {
     justifyContent: "center",
-    '& > *': {
+    "& > *": {
       margin: "5px"
     }
   }
@@ -71,12 +73,20 @@ const EditProfile = () => {
 
   const handleUpdate = event => {
     const formTarget = event.target;
-    const githubLink = formTarget.github.id + " https://github.com/" + formTarget.github.value;
+    const githubLink =
+      formTarget.github.id + " https://github.com/" + formTarget.github.value;
     const linkedinLink =
-      formTarget.linkedin.id + " https://www.linkedin.com/in/" + formTarget.linkedin.value;
+      formTarget.linkedin.id +
+      " https://www.linkedin.com/in/" +
+      formTarget.linkedin.value;
     const facebookLink =
-      formTarget.facebook.id + " https://www.facebook.com/" + formTarget.facebook.value;
-    const twitterLink = formTarget.twitter.id + " https://www.twitter.com/" + formTarget.twitter.value;
+      formTarget.facebook.id +
+      " https://www.facebook.com/" +
+      formTarget.facebook.value;
+    const twitterLink =
+      formTarget.twitter.id +
+      " https://www.twitter.com/" +
+      formTarget.twitter.value;
 
     let social = [];
     social.push(githubLink, linkedinLink, facebookLink, twitterLink);
@@ -127,8 +137,8 @@ const EditProfile = () => {
       <CssBaseline />
       {token && (
         <div className={classes.buttons}>
-      <Button
-            style={{width:"auto" }}
+          <Button
+            style={{ width: "auto" }}
             type="button"
             fullWidth
             variant="contained"
@@ -138,12 +148,13 @@ const EditProfile = () => {
           >
             Edit
           </Button>
-        <Link
-          to="/projects/:slug"
-          style={anchorStyle}
-        >
-          Add Project
-        </Link>
+          <br />
+          <Link
+            to={{ pathname: "/projects/add-project", state: { type: "card" } }}
+            style={anchorStyle}
+          >
+            Add Project
+          </Link>
         </div>
       )}
       <Modal
@@ -185,85 +196,84 @@ const EditProfile = () => {
                 id="bio"
                 autoComplete="bio"
               />
-                <Grid container spacing={3} alignItems="flex-end">
-                  <Grid item xs={1}>
-                    <GitHubIcon color="primary" className={classes.cardIcon} />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                    placeholder="johndoe"
-                      id="github"
-                      className={clsx(classes.margin, classes.textField)}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            https://github.com/
-                          </InputAdornment>
-                        )
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <LinkedInIcon color="primary" className={classes.cardIcon} />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                    placeholder="johndoe"
-                      id="linkedin"
-                      className={clsx(classes.margin, classes.textField)}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            https://www.linkedin.com/in/
-                          </InputAdornment>
-                        )
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
+              <Grid container spacing={3} alignItems="flex-end">
+                <Grid item xs={1}>
+                  <GitHubIcon color="primary" className={classes.cardIcon} />
                 </Grid>
-              
-              
-                <Grid container spacing={3} alignItems="flex-end">
-                  <Grid item  xs={1}>
-                    <FacebookIcon color="primary" className={classes.cardIcon} />
-                  </Grid>
-                  <Grid item  xs={5}>
-                    <TextField
+                <Grid item xs={5}>
+                  <TextField
                     placeholder="johndoe"
-                      id="facebook"
-                      className={clsx(classes.margin, classes.textField)}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            https://www.facebook.com/
-                          </InputAdornment>
-                        )
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item  xs={1}>
-                    <TwitterIcon color="primary" className={classes.cardIcon} />
-                  </Grid>
-                  <Grid item  xs={5}>
-                    <TextField
-                    placeholder="johndoe"
-                      id="twitter"
-                      className={clsx(classes.margin, classes.textField)}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            https://twitter.com/
-                          </InputAdornment>
-                        )
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
+                    id="github"
+                    className={clsx(classes.margin, classes.textField)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          https://github.com/
+                        </InputAdornment>
+                      )
+                    }}
+                    variant="outlined"
+                  />
                 </Grid>
-              
+                <Grid item xs={1}>
+                  <LinkedInIcon color="primary" className={classes.cardIcon} />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    placeholder="johndoe"
+                    id="linkedin"
+                    className={clsx(classes.margin, classes.textField)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          https://www.linkedin.com/in/
+                        </InputAdornment>
+                      )
+                    }}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={3} alignItems="flex-end">
+                <Grid item xs={1}>
+                  <FacebookIcon color="primary" className={classes.cardIcon} />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    placeholder="johndoe"
+                    id="facebook"
+                    className={clsx(classes.margin, classes.textField)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          https://www.facebook.com/
+                        </InputAdornment>
+                      )
+                    }}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <TwitterIcon color="primary" className={classes.cardIcon} />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    placeholder="johndoe"
+                    id="twitter"
+                    className={clsx(classes.margin, classes.textField)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          https://twitter.com/
+                        </InputAdornment>
+                      )
+                    }}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+
               <Button
                 type="submit"
                 fullWidth

@@ -13,7 +13,7 @@ import {Link} from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 275,
+    maxWidth: 275,
   },
   title: {
     fontSize: 14,
@@ -24,7 +24,6 @@ const useStyles = makeStyles({
 });
 
 const anchorStyle = {
-  display: "flex",
   textDecoration: "none",
   fontSize: "1rem",
   color: "#000"
@@ -45,8 +44,8 @@ export default function Profile(props) {
   
   return (
     <Card className={classes.root}>
-      <CardContent>
-        <Link to={`/${userDetails.sname}`} style={anchorStyle}><AccountBoxRoundedIcon fontSize="large" /></Link>
+      <CardContent style={{textAlign:"center"}}>
+        <Link to={`/${userDetails.sname}`} style={anchorStyle}><AccountBoxRoundedIcon color="primary" fontSize="large" /></Link>
         <Typography className={classes.title} color="textSecondary" gutterBottom>
           {userDetails.name}
         </Typography>
@@ -56,7 +55,7 @@ export default function Profile(props) {
         <Typography variant="body2" component="p">
           {userDetails.bio}
         </Typography>
-        <Grid container spacing={1} alignItems="flex-end">
+        <Grid container spacing={1} style={{justifyContent:'center'}}>
           <Grid item >
             <a href={social.github} target="_blank" rel="noopener noreferrer"><GitHubIcon color="primary" /></a>
           </Grid>

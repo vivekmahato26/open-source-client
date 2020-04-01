@@ -121,18 +121,20 @@ h6 {
   list-style-type: none;
   width: 100%;
 }
-.nav-links a {
+.nav-links a,.nav-links span {
   display: block;
   text-decoration: none;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   color: var(--mainBlack);
   transition: var(--mainTransition);
   text-align: center;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: var(--mainSpacing);
+  padding-left: 1rem;
+  cursor: pointer;
 }
-.nav-links a:hover {
+.nav-links a:hover,.nav-links span:hover {
   color: var(--primaryColor);
 }
 
@@ -184,4 +186,30 @@ h6 {
   height: 5px;
   background: #ababab;
   margin: 10px auto;
+}
+
+/*Messages */
+
+.message-container {
+  background-color: #fff;
+  display: none;
+  position: fixed;
+  bottom: 0px;
+  right: 5%;
+  z-index: 100;
+  width: 300px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+}
+
+.message-container h2 {
+  font-size: 1rem;
+  color: #3f51bf;
+  margin: 0;
+  padding: 5px;
+}
+
+.message-container .MuiChip-root {
+  width: fit-content;
+  justify-content: start;
+  margin: 5px;
 }

@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/auth";
 import { fade, makeStyles } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import AccountBoxRoundedIcon from "@material-ui/icons/AccountBoxRounded";
 
 const useStyles = makeStyles(theme => ({
   search: {
@@ -45,12 +48,37 @@ const useStyles = makeStyles(theme => ({
         width: "25ch"
       }
     }
-  }
+  },
+  card: { padding: "10px !Important" }
 }));
+const searchCss = {
+  background: "#e8e8e8",
+  marginLeft: "40%",
+  width: "350px",
+  border: "1px solid #ababab",
+  borderRadius: "5px",
+  position: "absolute",
+  top: "11%",
+  zIndex: "20"
+};
+
+const anchorStyle = {
+  textDecoration: "none",
+  fontSize: "1rem",
+  color: "#2979ff",
+  display: "flex",
+  alignItems: "center"
+};
 
 export default function Navbar() {
   const classes = useStyles();
   const auth = useContext(AuthContext);
+  const [searchRes, setSearchRes] = useState({
+    users: [],
+    projects: [],
+    issues: []
+  });
+  const [viewSearch, setViewSearch] = useState(false);
   const logout = () => {
     auth.logout();
   };
@@ -73,15 +101,119 @@ export default function Navbar() {
     }
   };
   const handleSearch = event => {
-    console.log(event.target.value);
+    const filter = event.target.value;
+    const requestBody = {
+      query: `
+        query{
+          search(filter:"${filter}"){
+            users{
+              _id
+              sname
+              name
+              bio
+              social
+              owned{
+                _id
+              }
+            }
+            projects{
+              _id
+              name
+              desc
+              organization{
+                name
+                website
+              }
+              slug
+              tag
+              category
+              createdAt
+              likes {
+                _id
+              }
+              community {
+                github
+                website
+                slack
+                facebook
+                discord
+                twitter
+              }
+              admin {
+                sname
+              }
+              comments {
+                message
+                user {
+                  _id
+                }
+              }
+            }
+            issues{
+              _id
+              slug
+            }
+          }
+        }
+      `
+    };
+    if (filter.length >= 4) {
+      fetch(" https://open-source-server.herokuapp.com/graphql?records=20", {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error("Failed!");
+          }
+          return res.json();
+        })
+        .then(resData => {
+          const search = resData.data.search;
+          setViewSearch(true);
+          setSearchRes(prevState => search);
+          if (
+            search.users.length === 0 &&
+            search.projects.length === 0 &&
+            search.issues.length === 0
+          ) {
+            setViewSearch(prevState => false);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
+  const handleClickRes = () => {
+    setViewSearch(prevState => false);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  function handleScroll() {
+    if (viewSearch) {
+      if (document.documentElement.scrollTop === 0) {
+        document.getElementById("searchDiv").style.position = "absolute";
+      } else {
+        document.getElementById("searchDiv").style.position = "sticky";
+      }
+    }
   }
   return (
-    <nav className="navbar">
-      <div className="nav-center">
-        <ul className="nav-links">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
+    <>
+      <nav className="navbar">
+        <div className="nav-center">
+          <ul className="nav-links">
+            <li>
+              <Link to="/">Home</Link>
+            </li>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />
@@ -96,14 +228,15 @@ export default function Navbar() {
                 onChange={handleSearch}
               />
             </div>
+
             {token && (
               <>
-              <li>
-                <a style={{cursor:"pointer"}}>Messages</a>
-              </li>
-              <li>
-                <Link to="">Notifications</Link>
-              </li>
+                <li>
+                  <span>Messages</span>
+                </li>
+                <li>
+                  <span>Notifications</span>
+                </li>
               </>
             )}
             <li onClick={logout}>
@@ -121,8 +254,82 @@ export default function Navbar() {
                 <Link to="/signup">Sign Up</Link>
               </li>
             )}
-        </ul>
-      </div>
-    </nav>
+          </ul>
+        </div>
+      </nav>
+      {viewSearch && (
+        <div id="searchDiv" style={searchCss}>
+          <Card>
+            <CardContent className={classes.card}>
+              {searchRes.users.length !== 0 && (
+                <>
+                  {searchRes.users.map(u => {
+                    return (
+                      <>
+                        <Link
+                          to={{
+                            pathname: `/${u.sname}`,
+                            state: {
+                              u
+                            }
+                          }}
+                          style={anchorStyle}
+                          onClick={handleClickRes}
+                        >
+                          <AccountBoxRoundedIcon
+                            color="primary"
+                            fontSize="large"
+                          />
+                          : {u.name}
+                        </Link>
+                      </>
+                    );
+                  })}
+                </>
+              )}
+              {searchRes.projects.length !== 0 && (
+                <>
+                  {searchRes.projects.map(project => {
+                    return (
+                      <>
+                        <Link
+                          to={{
+                            pathname: `/projects/${project.slug}`,
+                            state: {
+                              project: { project }
+                            }
+                          }}
+                          style={anchorStyle}
+                          onClick={handleClickRes}
+                        >
+                          {project.name}
+                        </Link>
+                      </>
+                    );
+                  })}
+                </>
+              )}
+              {searchRes.issues.length !== 0 && (
+                <>
+                  {searchRes.issues.map(i => {
+                    return (
+                      <>
+                        <Link
+                          to={`/${i.slug}`}
+                          style={anchorStyle}
+                          onClick={handleClickRes}
+                        >
+                          {i.name}
+                        </Link>
+                      </>
+                    );
+                  })}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 }
