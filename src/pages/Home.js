@@ -33,6 +33,9 @@ const useStyles = makeStyles(theme => ({
   sticky: {
     position: "sticky",
     top: "13%"
+  },
+  logo: {
+    height: 100
   }
 }));
 
@@ -44,13 +47,12 @@ export default function Home() {
   useEffect(() => {
     return;
   });
-
   return (
     <>
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <Grid container spacing={3}>
-            <Grid item xs={3}>
+            <Grid item xs={3} className="left-section">
               {token && <ProfileCard type={"card"} />}
               <Card className={classes.sticky}>
                 <MenuList>
@@ -68,10 +70,10 @@ export default function Home() {
                 </MenuList>
               </Card>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} className="middle-section">
               <Projects filterProject={filter} />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className="right-section">
                 <TagCard onTagClick={(args) => setFilter({tag:args,exec:args})}/>
             </Grid>
           </Grid>

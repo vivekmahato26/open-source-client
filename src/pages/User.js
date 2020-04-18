@@ -6,8 +6,12 @@ export default function User(props) {
   const [user, setUser] = useState({
     user: {}
   });
-  
-  const userId = localStorage.getItem("userId");
+  const [check,setCheck] = useState();
+  let userId;
+  userId = localStorage.getItem("userId");
+  if(props.location && props.location.state) {
+    userId = props.location.state.userId;
+  }
 
   const fetchUser = () => {
     const requestBody = {
@@ -21,6 +25,16 @@ export default function User(props) {
               social
               owned{
                 _id
+              }
+              following {
+                _id
+                profilePic
+                sname
+              }
+              followers {
+                _id
+                profilePic
+                sname
               }
             }
           }
@@ -42,7 +56,6 @@ export default function User(props) {
       })
       .then(resData => {
         let user = resData.data.user;
-        console.log(user);
         let social = user.social;
         user.social = [];
         social.forEach(element => {
@@ -51,34 +64,24 @@ export default function User(props) {
           let value = temp[1];
           user.social[key] = value;
         });
-        console.log(user);
         setUser({user});
       })
       .catch(err => {
         console.log(err);
       });
   };
+
+  if(check !== userId) {
+    setCheck(userId);
+    fetchUser();
+  }
+
   if (Object.keys(user.user).length === 0) {
     fetchUser();
   }
   
-  let userDetails = user.user; 
-  if(props.location) {
-    if(props.location.state) {
-      userDetails = props.location.state.u;
-        let social = userDetails.social;
-        userDetails.social = [];
-        social.forEach(element => {
-          let temp = element.split(" ");
-          let key = temp[0];
-          let value = temp[1];
-          userDetails.social[key] = value;
-        });
-    }
-  }
+  let userDetails = user.user;
 
-  console.log(userDetails);
-  
   return (
     <>
       {(props.type === 'card') && <ProfileCard user={userDetails} />}

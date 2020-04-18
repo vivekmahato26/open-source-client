@@ -35,7 +35,7 @@ export default function Commit(props) {
     event.preventDefault();
 
     const formTarget = event.target;
-    const date = new Date().toISOString();
+    
     let temp = formTarget.message.value;
         temp = temp.split(" ");
         let slug = "";
@@ -51,7 +51,7 @@ export default function Commit(props) {
     const requestBody = {
       query: `
             mutation{
-              addCommit(commitInput:{projectId:"${props.projectId}",commiter:"${formTarget.commiter.value}",message:"${formTarget.message.value}",link:"${formTarget.link.value}",slug:"${slug}",createdAt:"${date}"}){
+              addCommit(commitInput:{projectId:"${props.projectId}",commiter:"${formTarget.commiter.value}",message:"${formTarget.message.value}",link:"${formTarget.link.value}",slug:"${slug}"}){
                 commiter
                 message
                 link

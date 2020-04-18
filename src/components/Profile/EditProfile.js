@@ -62,6 +62,7 @@ const EditProfile = () => {
   const token = localStorage.getItem("token");
 
   const [open, setOpen] = React.useState(false);
+  const [img,setImg] = React.useState();
 
   const handleOpen = () => {
     setOpen(true);
@@ -69,6 +70,16 @@ const EditProfile = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleUpload = e => {
+    var files = e.target.files;
+    var file = files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setImg(reader.result);
+    }; 
   };
 
   const handleUpdate = event => {
@@ -93,7 +104,7 @@ const EditProfile = () => {
     const requestBody = {
       query: `
           mutation{
-            updateUser(userInput:{name:"${formTarget.name.value}",bio:"${formTarget.bio.value}",social:"${social}"}){
+            updateUser(userInput:{profilePic:"${img}",name:"${formTarget.name.value}",bio:"${formTarget.bio.value}",social:"${social}"}){
               _id
               name
               sname
@@ -173,6 +184,11 @@ const EditProfile = () => {
               Edit Profile
             </Typography>
             <form className={classes.form} noValidate onSubmit={handleUpdate}>
+            <div className="imgContainer">
+                {img && <img className="image" src={img} alt=""/>}
+                <input type="file" id="file" onChange={handleUpload} />
+                <label for="file" class="btn">{(img)?"Change Picture":"Add Picture"}</label>
+              </div>
               <TextField
                 variant="outlined"
                 margin="normal"

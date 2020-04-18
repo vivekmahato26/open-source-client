@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import ShareIcon from "@material-ui/icons/Share";
-import AccountBoxRoundedIcon from "@material-ui/icons/AccountBoxRounded";
-import CommentIcon from "@material-ui/icons/Comment";
-import { Link } from "react-router-dom";
-import { Grid, Paper, TextField } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Chip from "@material-ui/core/Chip";
+import React, { useState, useEffect } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import ShareIcon from '@material-ui/icons/Share'
+import AccountBoxRoundedIcon from '@material-ui/icons/AccountBoxRounded'
+import CommentIcon from '@material-ui/icons/Comment'
+import { Link } from 'react-router-dom'
+import { Grid, Paper, TextField } from '@material-ui/core'
+import Avatar from '@material-ui/core/Avatar'
+import Chip from '@material-ui/core/Chip'
 
 const useStyles = makeStyles({
   root: {
@@ -21,158 +21,164 @@ const useStyles = makeStyles({
   },
   title: {
     fontSize: 14,
-    display: "flex",
-    alignItems: "center",
-    "& > *": {
-      margin: "1px"
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      margin: '1px'
     }
   },
   pos: {
     marginBottom: 12
   },
   block: {
-    display: "block"
+    display: 'block',
+    padding: '0.5rem'
   },
   comment: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     paddingBottom: 5,
     paddingLeft: 10,
-    background: "#c7c7c7"
+    background: '#c7c7c7'
   },
   tags: {
-    display: "flex",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    "& > *": {
-      margin: "1px"
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: '1px'
     }
   },
   paper: {
-    background: "#f7f7f7",
+    background: '#f7f7f7',
     padding: 5,
     marginBottom: 8
+  },
+  icon: {
+    width: 25,
+    margin: 5
   }
-});
+})
 
 const rightAligned = {
-  float: "right"
-};
+  float: 'right'
+}
 const anchorStyle = {
-  display: "flex",
-  textDecoration: "none",
-  fontSize: "1rem",
-  color: "#2979ff"
-};
+  display: 'flex',
+  textDecoration: 'none',
+  fontSize: '1rem',
+  color: '#2979ff'
+}
 
 const anchorStyleButton = {
-  display: "flex",
-  textDecoration: "none",
-  fontSize: "1rem",
-  color: "#3f51b5"
-};
+  display: 'flex',
+  textDecoration: 'none',
+  fontSize: '1rem',
+  color: '#3f51b5'
+}
 
 export default function Project(props) {
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem('userId')
+  const token = localStorage.getItem('token')
   const [filterProj, setFilterProj] = useState({
     tag: null,
     category: null
-  });
-  const [projects, setProjects] = useState([]);
-  const [length, setLength] = useState({ length: 0 });
-  const [activeId, setActiveId] = useState([]);
-  const [filter, setFilter] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  const [page, setPage] = useState(0);
-  const [prevFilter, setPrevFilter] = useState(null);
-  const [comment, setComment] = useState([]);
+  })
+  const [projects, setProjects] = useState([])
+  const [length, setLength] = useState({ length: 0 })
+  const [activeId, setActiveId] = useState([])
+  const [filter, setFilter] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
+  const [page, setPage] = useState(0)
+  const [prevFilter, setPrevFilter] = useState(null)
+  const [comment, setComment] = useState([])
 
   const handleFilterCategory = event => {
-    setPage(0);
-    setFilter(true);
+    setPage(0)
+    setFilter(true)
     let filterP = {
       tag: null,
       category: event.target.innerText
-    };
-    setFilterProj(prevState => filterP);
-    fetchProjects(null, filterProj.category);
-  };
+    }
+    setFilterProj(prevState => filterP)
+    fetchProjects(null, filterProj.category)
+  }
   const handleFilterTag = event => {
-    setPage(0);
-    setFilter(true);
+    setPage(0)
+    setFilter(true)
     let filterP = {
       tag: event.target.innerText,
       category: null
-    };
-    setFilterProj(prevState => filterP);
-    fetchProjects(filterProj.tag, null);
-  };
+    }
+    setFilterProj(prevState => filterP)
+    fetchProjects(filterProj.tag, null)
+  }
 
   const handleLike = index => {
-    let args;
-    let placeholder = [];
-    let tempArr = activeId;
+    let args
+    let placeholder = []
+    let tempArr = activeId
 
     if (activeId[index].liked) {
       args = {
         id: activeId[index].projectId,
         index,
-        action: "dislike"
-      };
-      handleLikeProject(args);
-      tempArr[index].liked = false;
-      tempArr[index].count = tempArr[index].count - 1;
-      tempArr[index].userIds.filter(function(params) {
-        var id = params._id;
-        return id !== userId;
-      });
-      setActiveId(prevState => [...placeholder, ...tempArr]);
+        action: 'dislike'
+      }
+      handleLikeProject(args)
+      tempArr[index].liked = false
+      tempArr[index].count = tempArr[index].count - 1
+      tempArr[index].userIds.filter(function (params) {
+        var id = params._id
+        return id !== userId
+      })
+      setActiveId(prevState => [...placeholder, ...tempArr])
     } else {
       args = {
         id: activeId[index].projectId,
         index,
-        action: "like"
-      };
-      tempArr[index].liked = true;
-      tempArr[index].count = tempArr[index].count + 1;
-      tempArr[index].userIds.push({ _id: userId });
-      handleLikeProject(args);
-      setActiveId(prevState => [...placeholder, ...tempArr]);
+        action: 'like'
+      }
+      tempArr[index].liked = true
+      tempArr[index].count = tempArr[index].count + 1
+      tempArr[index].userIds.push({ _id: userId })
+      handleLikeProject(args)
+      setActiveId(prevState => [...placeholder, ...tempArr])
     }
-  };
+  }
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   function handleScroll() {
     if (
       window.innerHeight + document.documentElement.scrollTop !==
       document.documentElement.offsetHeight
     )
-      return;
-    setPage(prevState => prevState + 1);
-    setIsFetching(true);
+      return
+    setPage(prevState => prevState + 1)
+    setIsFetching(true)
   }
 
   const fetchProjects = (tag, category) => {
     if (tag) {
-      tag = `"${tag}"`;
+      tag = `"${tag}"`
     } else {
-      tag = null;
+      tag = null
     }
     if (category) {
-      category = `"${category}"`;
+      category = `"${category}"`
     } else {
-      category = null;
+      category = null
     }
     const requestBody = {
       query: `
             query {
               projects(projectFilter:{tag:[${tag}],category:${category},userId:null}){
                 _id
+                icon
                 name
                 desc
                 organization{
@@ -187,6 +193,7 @@ export default function Project(props) {
                   _id
                 }
                 admin {
+                  _id
                   sname
                 }
                 community {
@@ -201,41 +208,51 @@ export default function Project(props) {
                   message
                   user {
                     _id
+                    profilePic
+                    sname
+                  }
+                  children {
+                    message
+                    user {
+                      _id
+                      profilePic
+                      sname
+                    }
                   }
                 }
               }
             }
           `
-    };
+    }
 
     fetch(` https://open-source-server.herokuapp.com/graphql?page=${page}&records=${4}`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Failed!");
+          throw new Error('Failed!')
         }
-        return res.json();
+        return res.json()
       })
       .then(resData => {
-        const projectArr = resData.data.projects;
+        const projectArr = resData.data.projects
 
         projectArr.map(p => {
           var like = {
             projectId: p._id,
             userId: p.likes
-          };
-          var ifLiked = false;
+          }
+          var ifLiked = false
           like.userId.map(uid => {
             if (uid._id === userId) {
-              ifLiked = true;
+              ifLiked = true
             }
-            return uid;
-          });
+            return uid
+          })
           setActiveId(prevState => [
             ...prevState,
             {
@@ -245,45 +262,45 @@ export default function Project(props) {
               count: p.likes.length,
               liked: ifLiked
             }
-          ]);
-          return p;
-        });
+          ])
+          return p
+        })
         if (projectArr.length === 0) {
-          setIsFetching(true);
+          setIsFetching(true)
           if (tag || category) {
             if (page !== 0) {
-              setIsFetching(true);
-              return;
+              setIsFetching(true)
+              return
             }
-            setIsFetching(true);
-            setProjects(prevProjects => [...projectArr]);
+            setIsFetching(true)
+            setProjects(prevProjects => [...projectArr])
           }
         } else if (tag || category) {
-          setIsFetching(false);
-          setProjects(prevProjects => [...projectArr]);
+          setIsFetching(false)
+          setProjects(prevProjects => [...projectArr])
         } else {
-          setIsFetching(false);
-          setProjects(prevProjects => [...prevProjects, ...projectArr]);
+          setIsFetching(false)
+          setProjects(prevProjects => [...prevProjects, ...projectArr])
         }
-        return;
+        return
       })
       .catch(err => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching) return
     if (filter) {
-      fetchProjects(filterProj.tag, filterProj.category);
-      return;
+      fetchProjects(filterProj.tag, filterProj.category)
+      return
     }
-    fetchProjects();
-  }, [isFetching]);
+    fetchProjects()
+  }, [isFetching])
 
   const handleLikeProject = args => {
-    let requestBody;
-    if (args.action === "like") {
+    let requestBody
+    if (args.action === 'like') {
       requestBody = {
         query: `
               mutation {
@@ -295,9 +312,9 @@ export default function Project(props) {
                 }
               }
             `
-      };
+      }
     }
-    if (args.action === "dislike") {
+    if (args.action === 'dislike') {
       requestBody = {
         query: `
               mutation {
@@ -309,123 +326,128 @@ export default function Project(props) {
                 }
               }
             `
-      };
+      }
     }
 
-    fetch(" https://open-source-server.herokuapp.com/graphql", {
-      method: "POST",
+    fetch(' https://open-source-server.herokuapp.com/graphql', {
+      method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Failed!");
+          throw new Error('Failed!')
         }
-        return res.json();
+        return res.json()
       })
       .then(resData => {
-        if(resData.errors) {
-          window.location.assign(`http://${window.location.hostname}:${window.location.port}/signin`)
-        }
-        else {
-          return resData;
+        if (resData.errors) {
+          window.location.assign(
+            `http://${window.location.hostname}:${window.location.port}/signin`
+          )
+        } else {
+          return resData
         }
       })
       .catch(err => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
   if (length.length === 0) {
-    fetchProjects();
-    setLength({ length: 4 });
+    fetchProjects()
+    setLength({ length: 4 })
   }
 
   if (prevFilter !== props.filterProject.exec) {
-    setPage(0);
+    setPage(0)
     if (props.filterProject.tag) {
-      setFilter(true);
+      setFilter(true)
       let filterP = {
         tag: props.filterProject.tag,
         category: null
-      };
-      setFilterProj(filterP);
-      setIsFetching(true);
-      fetchProjects(props.filterProject.tag, null);
+      }
+      setFilterProj(filterP)
+      setIsFetching(true)
+      fetchProjects(props.filterProject.tag, null)
     }
     if (props.filterProject.category) {
-      setFilter(true);
+      setFilter(true)
       let filterP = {
         tag: null,
         category: props.filterProject.category
-      };
-      setFilterProj(prevState => filterP);
-      setIsFetching(true);
-      fetchProjects(null, props.filterProject.category);
+      }
+      setFilterProj(prevState => filterP)
+      setIsFetching(true)
+      fetchProjects(null, props.filterProject.category)
     }
-    setPrevFilter(props.filterProject.exec);
+    setPrevFilter(props.filterProject.exec)
   }
 
   const handleComment = (event, pid) => {
-    const form = event.target;
+    const form = event.target
     //event.preventDefault();
-    const date = new Date().toISOString();
+
     const requestBody = {
       query: `
         mutation{
-          postComment(commentInput:{message:"${form.comment.value}",project:"${pid}",createdAt:"${date}"}){
+          postComment(commentInput:{message:"${form.comment.value}",project:"${pid}"}){
             message
             user {
               _id
+              profilePic
+              sname
             }
           }
         }
       
       `
-    };
-    fetch(" https://open-source-server.herokuapp.com/graphql", {
-      method: "POST",
+    }
+    fetch(' https://open-source-server.herokuapp.com/graphql', {
+      method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
       }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Failed!");
+          throw new Error('Failed!')
         }
-        return res.json();
+        return res.json()
       })
       .then(resData => {
-        if(resData.errors) {
-          window.location.assign(`http://${window.location.hostname}:${window.location.port}/signin`)
-        }
-        else {
-          return resData;
+        if (resData.errors) {
+          window.location.assign(
+            `http://${window.location.hostname}:${window.location.port}/signin`
+          )
+        } else {
+          return resData
         }
       })
       .catch(err => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
-  const classes = useStyles();
-  const line = <div className="underline"></div>;
+  const classes = useStyles()
+  const line = <div className="underline"></div>
 
-  const projectList = projects;
+  const projectList = projects
   let proj = projectList.map((project, index) => {
-    const projectId = project._id;
+    const projectId = project._id
+    let userId = project.admin._id
 
     return (
       <React.Fragment key={projectId}>
         <Card raised={true} className={classes.root} variant="outlined">
           <CardContent>
             <Typography
-              component={"span"}
+              component={'span'}
               className={classes.title}
               color="textSecondary"
               gutterBottom
@@ -439,7 +461,12 @@ export default function Project(props) {
                 }}
                 style={anchorStyle}
               >
-                {project.name}
+                <div className="imgContainer">
+                  {project.icon && (
+                    <img className={classes.icon} src={project.icon} alt="" />
+                  )}
+                  {project.name}
+                </div>
               </Link>
               <Chip
                 avatar={<Avatar>{project.category[0].toUpperCase()}</Avatar>}
@@ -452,10 +479,16 @@ export default function Project(props) {
             </Typography>
             {line}
             <Typography className={classes.pos} color="textSecondary">
-              {project.organization !== undefined ? (
+              {project.organization !== undefined &&
+              project.organization !== null ? (
                 project.organization.name
               ) : (
-                <Link to="/profile" style={anchorStyle}>
+                <Link to={{
+                  pathname: `/${project.admin.sname}`,
+                  state: {
+                     userId
+                  }
+                }} style={anchorStyle}>
                   {project.admin.sname}
                 </Link>
               )}
@@ -475,7 +508,7 @@ export default function Project(props) {
                       color="primary"
                       onClick={handleFilterTag}
                     />
-                  );
+                  )
                 })}
               </div>
             </Grid>
@@ -484,11 +517,11 @@ export default function Project(props) {
             <IconButton
               aria-label="Likes"
               onClick={() => {
-                handleLike(index);
+                handleLike(index)
               }}
             >
               <FavoriteIcon
-                color={activeId[index].liked ? "secondary" : "disabled"}
+                color={activeId[index].liked ? 'secondary' : 'disabled'}
               />
               {activeId[index].count !== 0 && (
                 <Typography>
@@ -504,13 +537,19 @@ export default function Project(props) {
             <IconButton
               aria-label="comment-icon"
               onClick={() => {
-                setComment(projectId);
+                setComment(projectId)
                 if (comment === projectId) {
-                  setComment(null);
+                  setComment(null)
                 }
               }}
             >
-              <CommentIcon color="primary" />
+              <CommentIcon
+                color={
+                  comment === projectId || project.comments.length !== 0
+                    ? 'primary'
+                    : 'disabled'
+                }
+              />
             </IconButton>
             <Button
               style={rightAligned}
@@ -534,20 +573,42 @@ export default function Project(props) {
           {comment === projectId && (
             <>
               {project.comments.map(c => {
+                userId = c.user._id
                 return (
-                  <Paper>
+                  <Paper key={c._id}>
                     <div className={classes.comment}>
-                      <AccountBoxRoundedIcon fontSize="medium" color="primary" style={{marginRight:"5px"}} />
+                      <Link
+                        to={{
+                          pathname: `/${c.user.sname}`,
+                          state: {
+                             userId
+                          }
+                        }}
+                      >
+                        {c.profilePic ? (
+                          <img
+                            src={c.user.profilePic}
+                            alt=""
+                            style={{ marginRight: '5px', height: '24px' }}
+                          />
+                        ) : (
+                          <AccountBoxRoundedIcon
+                            color="primary"
+                            style={{ marginRight: '5px' }}
+                          />
+                        )}
+                      </Link>
+
                       {c.message}
                     </div>
                   </Paper>
-                );
+                )
               })}
               <form
-                style={{ margin: "10px" }}
+                style={{ margin: '10px' }}
                 noValidate
                 onSubmit={e => {
-                  handleComment(e, projectId);
+                  handleComment(e, projectId)
                 }}
               >
                 <TextField
@@ -562,7 +623,7 @@ export default function Project(props) {
                   id="comment"
                 />
                 <Button
-                  style={{ marginBottom: "10px", float: "right" }}
+                  style={{ marginBottom: '10px', float: 'right' }}
                   variant="outlined"
                   color="primary"
                   type="submit"
@@ -575,14 +636,14 @@ export default function Project(props) {
         </Card>
         <br />
       </React.Fragment>
-    );
-  });
+    )
+  })
   if (projectList.length === 0) {
     proj = (
       <>
         <h2>No projects available for selected filters!!!</h2>
       </>
-    );
+    )
   }
-  return <div id="project-main">{proj}</div>;
+  return <div id="project-main">{proj}</div>
 }

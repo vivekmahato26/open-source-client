@@ -26,6 +26,7 @@ export default function AddProject(props) {
   const classes = useStyles();
 
   const [category, setCategory] = useState("");
+  const [img,setImg] = useState();
 
 
   const handleChangeCategory = event => {
@@ -38,12 +39,32 @@ export default function AddProject(props) {
     return 1;
   };
 
+  const handleUpload = e => {
+    var files = e.target.files;
+    var file = files[0];
+    let reader = new FileReader();
+
+    // Convert the file to base64 text
+    //reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+    // on reader load somthing...
+    reader.onload = () => {
+      setImg(reader.result);
+      // Make a fileInfo Object
+      // let fileInfo = {
+      //   name: file.name,
+      //   type: file.type,
+      //   size: Math.round(file.size / 1000) + " kB",
+      //   base64: reader.result,
+      //   file: file
+      // };
+    }; // reader.onload
+  };
 
   const addProject = event => {
     event.preventDefault();
 
     const formTarget = event.target;
-    const date = new Date().toISOString();
     let temp = formTarget.name.value;
     temp = temp.split(" ");
     let slug = "";
@@ -58,7 +79,7 @@ export default function AddProject(props) {
     const requestBody = {
       query: `
             mutation{
-              addProject(projectInput:{name:"${formTarget.name.value}",desc:"${formTarget.description.value}",category:"${category}",organization:"${formTarget.organization.value}",slug:"${slug}",tag:"${chip}",createdAt:"${date}"}){
+              addProject(projectInput:{icon:"${img}",name:"${formTarget.name.value}",desc:"${formTarget.description.value}",category:"${category}",organization:"${formTarget.organization.value}",slug:"${slug}",tag:"${chip}"}){
                 name
                 desc
                 tag
@@ -100,6 +121,12 @@ export default function AddProject(props) {
       <CssBaseline />
           <div className={classes.paper}>
             <form className={classes.form} noValidate onSubmit={addProject}>
+              <div className="imgContainer">
+                {img && <img className="image" src={img} alt=""/>}
+                <input type="file" id="file" onChange={handleUpload} />
+                <label for="file" class="btn">{(img)?"Change Icon":"Add Icon"}</label>
+              </div>
+              
               <TextField
                 variant="outlined"
                 margin="normal"

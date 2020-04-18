@@ -43,7 +43,7 @@ export default function Issue(props) {
     event.preventDefault();
 
     const formTarget = event.target;
-    const date = new Date().toISOString();
+    
     let temp = formTarget.name.value;
     temp = temp.split(" ");
     let slug = "";
@@ -58,7 +58,7 @@ export default function Issue(props) {
     const requestBody = {
       query: `
             mutation{
-              raiseIssue(issueInput:{projectId:"${props.projectId}",name:"${formTarget.name.value}",desc:"${formTarget.description.value}",status:"${formTarget.status.value}",slug:"${slug}",link:"${formTarget.link.value}",tag:"${chip}",createdAt:"${date}"}){
+              raiseIssue(issueInput:{projectId:"${props.projectId}",name:"${formTarget.name.value}",desc:"${formTarget.description.value}",status:"${formTarget.status.value}",slug:"${slug}",link:"${formTarget.link.value}",tag:"${chip}"}){
                 name
                 desc
                 tag

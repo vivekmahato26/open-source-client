@@ -14,22 +14,13 @@ import { IconContext } from "react-icons";
 import {
   TextField,
   Button,
-  Typography,
+  
   CssBaseline,
-  Grid
+  
 } from "@material-ui/core";
 import ChipInput from "material-ui-chip-input";
 //import { Link } from "react-router-dom";
-const anchorStyle = {
-  textDecoration: "none",
-  background: "#3f51b5",
-  color: "#fff",
-  borderRadius: "5px",
-  padding: "10px",
-  marginRight: "5px",
-  textTransform: "uppercase",
-  display: "inline-block"
-};
+
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -92,7 +83,6 @@ const UpdateProject = props => {
     const twitterLink = " https://www.twitter.com/" + formTarget.twitter.value;
     const slackLink = " https://www.slack.com/" + formTarget.slack.value;
     const discordLink = " https://www.discord.com/" + formTarget.discord.value;
-    console.log(chip);
     const requestBody = {
       query: `
           mutation{
